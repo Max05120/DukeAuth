@@ -1,0 +1,14 @@
+{
+  "name": "dukeauth",
+  "private": true,
+  "version": "0.1.0",
+  "packageManager": "pnpm@8.15.0",
+  "scripts": {
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "typecheck": "tsc -b",
+    "build": "tsc -b",
+    "dev": "echo Use per-app dev scripts"
+  }
+}
+

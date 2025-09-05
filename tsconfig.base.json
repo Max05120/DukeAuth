@@ -1,0 +1,28 @@
+{
+  "compilerOptions": {
+    "target": "ES2021",
+    "module": "CommonJS",
+    "moduleResolution": "Node",
+    "declaration": true,
+    "composite": true,
+    "allowJs": false,
+    "checkJs": false,
+    "resolveJsonModule": true,
+    "strict": true,
+    "noImplicitOverride": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": false,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "baseUrl": ".",
+    "paths": {
+      "@dukeauth/core": ["packages/core/src"],
+      "@dukeauth/db": ["packages/db/src"],
+      "@dukeauth/security": ["packages/security/src"]
+    },
+    "outDir": "dist"
+  },
+  "include": ["packages", "apps"]
+}
+

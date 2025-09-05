@@ -1,0 +1,10 @@
+node_modules
+dist
+.turbo
+.next
+build
+coverage
+pnpm-lock.yaml
+**/*.js
+**/*.cjs
+
