@@ -1,0 +1,29 @@
+{
+  "name": "dukeauth",
+  "private": true,
+  "version": "0.1.0",
+  "packageManager": "pnpm@9.0.0",
+  "scripts": {
+    "build": "pnpm -r --filter ./packages --filter ./apps run build",
+    "typecheck": "pnpm -r --filter ./packages --filter ./apps run typecheck",
+    "lint": "eslint . --ext .ts,.tsx",
+    "format": "prettier --write ."
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@types/jsonwebtoken": "^9.0.5",
+    "@types/morgan": "^1.9.7",
+    "@typescript-eslint/eslint-plugin": "^7.18.0",
+    "@typescript-eslint/parser": "^7.18.0",
+    "eslint": "^8.57.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-import": "^2.29.1",
+    "eslint-plugin-unused-imports": "^4.0.0",
+    "prettier": "^3.3.3",
+    "prisma": "^5.19.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.6.2"
+  }
+}

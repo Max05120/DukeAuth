@@ -1,0 +1,41 @@
+import { z } from 'zod';
+
+export const registerSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(8),
+  organizationName: z.string().min(2),
+  subdomain: z
+    .string()
+    .min(2)
+    .regex(/^[a-z0-9-]+$/),
+});
+
+export const loginSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(8),
+  totp: z.string().optional(),
+});
+
+export const productCreateSchema = z.object({
+  title: z.string().min(1),
+  description: z.string().optional(),
+  priceCents: z.number().int().nonnegative(),
+  currency: z.literal('USD').default('USD'),
+  inventory: z.number().int().nonnegative(),
+  images: z.array(z.string()).default([]),
+  attributes: z.record(z.any()).optional(),
+  status: z.enum(['DRAFT', 'PUBLISHED', 'ARCHIVED']).default('DRAFT'),
+});
+
+export const productUpdateSchema = productCreateSchema.partial();
+
+export const signUploadSchema = z.object({
+  contentType: z.enum(['image/jpeg', 'image/png', 'image/webp', 'image/gif']),
+  filename: z.string().min(1),
+});
+
+export type RegisterInput = z.infer<typeof registerSchema>;
+export type LoginInput = z.infer<typeof loginSchema>;
+export type ProductCreateInput = z.infer<typeof productCreateSchema>;
+export type ProductUpdateInput = z.infer<typeof productUpdateSchema>;
+export type SignUploadInput = z.infer<typeof signUploadSchema>;
