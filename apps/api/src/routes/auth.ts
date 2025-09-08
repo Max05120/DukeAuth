@@ -14,6 +14,8 @@ router.post('/register', validate(registerSchema), async (req, res, next) => {
     const result = await prisma.$transaction(async (tx) => {
       const user = await tx.user.create({ data: { email, passwordHash } });
       const org = await tx.organization.create({ data: { name: organizationName } });
+      // Bind tenant for RLS-checked inserts
+      await tx.$executeRawUnsafe(`SET LOCAL dukeauth.tenant_id='${org.id}'`);
       await tx.organizationMembership.create({
         data: { userId: user.id, organizationId: org.id, role: 'OWNER' },
       });

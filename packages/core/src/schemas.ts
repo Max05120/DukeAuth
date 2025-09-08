@@ -34,8 +34,13 @@ export const signUploadSchema = z.object({
   filename: z.string().min(1),
 });
 
+export const apiKeyCreateSchema = z.object({
+  name: z.string().optional(),
+});
+
 export type RegisterInput = z.infer<typeof registerSchema>;
 export type LoginInput = z.infer<typeof loginSchema>;
 export type ProductCreateInput = z.infer<typeof productCreateSchema>;
 export type ProductUpdateInput = z.infer<typeof productUpdateSchema>;
 export type SignUploadInput = z.infer<typeof signUploadSchema>;
+export type ApiKeyCreateInput = z.infer<typeof apiKeyCreateSchema>;

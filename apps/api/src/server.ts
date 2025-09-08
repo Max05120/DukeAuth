@@ -10,6 +10,7 @@ import { tenantResolver } from './middleware/tenant';
 import authRouter from './routes/auth';
 import productsRouter from './routes/products';
 import uploadsRouter from './routes/uploads';
+import apiKeysRouter from './routes/apikeys';
 
 export const app = express();
 
@@ -26,8 +27,8 @@ app.use(tenantResolver);
 app.use('/auth', authRouter);
 app.use('/products', productsRouter);
 app.use('/uploads', uploadsRouter);
+app.use('/apikeys', apiKeysRouter);
 
 app.get('/health', (_req, res) => res.json({ ok: true }));
 
 app.use(errorHandler);
-

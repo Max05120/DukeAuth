@@ -55,9 +55,18 @@ CREATE POLICY apikey_isolation ON "ApiKey"
   USING ("organizationId" = current_setting('dukeauth.tenant_id', true))
   WITH CHECK ("organizationId" = current_setting('dukeauth.tenant_id', true));
 
--- NOTE: With strict RLS on Marketplace and ApiKey, lookups by subdomain or keyHash
--- will require either (a) setting tenant first, or (b) additional targeted policies.
--- For production, consider adding controlled lookup policies using additional GUCs
--- like `dukeauth.lookup_subdomain` / `dukeauth.lookup_keyhash` and policies that
--- allow SELECT when the column matches those values.
+-- Safe lookup policies for tenant resolution via controlled GUCs
+DO $$ BEGIN
+  DROP POLICY IF EXISTS marketplace_lookup_subdomain ON "Marketplace";
+  DROP POLICY IF EXISTS apikey_lookup_hash ON "ApiKey";
+EXCEPTION WHEN UNDEFINED_OBJECT THEN NULL; END $$;
 
+-- Allow SELECT on Marketplace when subdomain matches session GUC
+CREATE POLICY marketplace_lookup_subdomain ON "Marketplace"
+  FOR SELECT
+  USING ("subdomain" = current_setting('dukeauth.marketplace_subdomain', true));
+
+-- Allow SELECT on ApiKey when keyHash matches session GUC
+CREATE POLICY apikey_lookup_hash ON "ApiKey"
+  FOR SELECT
+  USING ("keyHash" = current_setting('dukeauth.api_key_hash', true));

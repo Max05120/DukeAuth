@@ -7,7 +7,8 @@
     "build": "pnpm -r --filter ./packages --filter ./apps run build",
     "typecheck": "pnpm -r --filter ./packages --filter ./apps run typecheck",
     "lint": "eslint . --ext .ts,.tsx",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "seed": "ts-node scripts/seed.ts"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
