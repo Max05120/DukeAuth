@@ -3,6 +3,7 @@ import { validate } from '../middleware/validate';
 import { loginSchema, registerSchema } from '@dukeauth/core';
 import { prisma, withTenant } from '@dukeauth/db';
 import { hashPassword, verifyPassword, issueTokens, rotateRefreshToken, revokeSession } from '@dukeauth/security';
+import { sendWelcomeEmail } from '@dukeauth/core';
 import { HttpError } from '../middleware/errors';
 
 const router = Router();
@@ -23,6 +24,8 @@ router.post('/register', validate(registerSchema), async (req, res, next) => {
       return { user, org };
     });
     const tokens = await issueTokens(result.user.id);
+    // Fire-and-forget welcome email
+    sendWelcomeEmail(email, organizationName).catch(() => {});
     res.status(201).json({ userId: result.user.id, organizationId: result.org.id, ...tokens });
   } catch (e: any) {
     if (e.code === 'P2002') return next(new HttpError(409, 'Duplicate email or subdomain'));

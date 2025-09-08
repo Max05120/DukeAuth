@@ -21,6 +21,14 @@ export const Env = {
   AWS_REGION: () => getEnv('AWS_REGION', 'us-east-1'),
   POLYGON_RPC_URL: () => getEnv('POLYGON_RPC_URL', ''),
   MINTER_PRIVATE_KEY: () => getEnv('MINTER_PRIVATE_KEY', ''),
+  API_BASE_URL: () => getEnv('API_BASE_URL', 'http://localhost:4000'),
+  STRIPE_SECRET_KEY: () => getEnv('STRIPE_SECRET_KEY', ''),
+  STRIPE_WEBHOOK_SECRET: () => getEnv('STRIPE_WEBHOOK_SECRET', ''),
+  STRIPE_PRICE_STARTER: () => getEnv('STRIPE_PRICE_STARTER', ''),
+  STRIPE_PRICE_PRO: () => getEnv('STRIPE_PRICE_PRO', ''),
+  STRIPE_PRICE_ENTERPRISE: () => getEnv('STRIPE_PRICE_ENTERPRISE', ''),
+  FROM_EMAIL: () => getEnv('FROM_EMAIL', 'noreply@example.com'),
+  RESEND_API_KEY: () => getEnv('RESEND_API_KEY', ''),
 };
 
 export function parseSubdomain(host: string, rootDomain: string): string | null {

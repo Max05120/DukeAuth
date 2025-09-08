@@ -13,6 +13,7 @@
     "@dukeauth/core": "workspace:*",
     "bullmq": "^5.8.2",
     "ioredis": "^5.4.1",
+    "pino": "^9.5.0",
     "viem": "^2.21.15"
   },
   "devDependencies": {

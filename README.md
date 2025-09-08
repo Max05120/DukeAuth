@@ -41,3 +41,20 @@ pnpm --filter @dukeauth/api dev
 - API resolves tenant via `x-api-key` or subdomain on Host. Ensure Marketplace and ApiKey records exist.
 - Marketplace is RLS-protected; for subdomain resolution, ensure policies allow lookup (see `infra/sql/rls.sql`).
 
+## Seeding
+
+Seed a development org, user, marketplace, and API key:
+
+```bash
+pnpm seed
+```
+Printed API key appears once in the console.
+
+## Testing
+
+API tests use Vitest + Supertest (requires Postgres + Redis):
+
+```bash
+pnpm --filter @dukeauth/api test
+```
+
