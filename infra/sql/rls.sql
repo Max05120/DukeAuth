@@ -15,6 +15,7 @@ ALTER TABLE "Subscription" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE "Marketplace" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE "OrganizationMembership" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE "ApiKey" ENABLE ROW LEVEL SECURITY;
+ALTER TABLE "MintUsage" ENABLE ROW LEVEL SECURITY;
 
 -- Drop existing policies if re-running
 DO $$ BEGIN
@@ -25,6 +26,7 @@ DO $$ BEGIN
   DROP POLICY IF EXISTS marketplace_isolation ON "Marketplace";
   DROP POLICY IF EXISTS org_membership_isolation ON "OrganizationMembership";
   DROP POLICY IF EXISTS apikey_isolation ON "ApiKey";
+  DROP POLICY IF EXISTS mintusage_isolation ON "MintUsage";
 EXCEPTION WHEN UNDEFINED_OBJECT THEN NULL; END $$;
 
 CREATE POLICY product_isolation ON "Product"
@@ -52,6 +54,10 @@ CREATE POLICY org_membership_isolation ON "OrganizationMembership"
   WITH CHECK ("organizationId" = current_setting('dukeauth.tenant_id', true));
 
 CREATE POLICY apikey_isolation ON "ApiKey"
+  USING ("organizationId" = current_setting('dukeauth.tenant_id', true))
+  WITH CHECK ("organizationId" = current_setting('dukeauth.tenant_id', true));
+
+CREATE POLICY mintusage_isolation ON "MintUsage"
   USING ("organizationId" = current_setting('dukeauth.tenant_id', true))
   WITH CHECK ("organizationId" = current_setting('dukeauth.tenant_id', true));
 

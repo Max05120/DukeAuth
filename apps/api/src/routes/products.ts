@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { withTenant, prisma } from '@dukeauth/db';
 import { HttpError } from '../middleware/errors';
-import { productCreateSchema, productUpdateSchema } from '@dukeauth/core';
+import { enqueueMint, productCreateSchema, productUpdateSchema } from '@dukeauth/core';
 import { validate } from '../middleware/validate';
 import { requireAuth, requireRole } from '../middleware/auth';
 
@@ -45,11 +45,32 @@ router.post('/', requireAuth, requireRole(['OWNER', 'ADMIN', 'STAFF']), validate
           currency: data.currency,
           inventory: data.inventory,
           images: data.images ?? [],
+          videos: data.videos ?? [],
+          collection: data.collection,
+          sku: data.sku,
+          material: data.material,
+          origin: data.origin,
+          manufacturingDate: data.manufacturingDate ? new Date(data.manufacturingDate) : null,
+          rarity: data.rarity,
+          variant: data.variant,
           attributes: data.attributes,
+          mintOn: data.mintOn ?? 'MANUAL',
           status: data.status,
         },
       }),
     );
+    // Auto-mint if policy and status allow, enforce quotas at /nfts endpoint
+    if (product.mintOn === 'ON_CREATE' && product.status === 'PUBLISHED') {
+      // Create bare NFT with metadata placeholder; actual to/tokenURI should be provided via product attributes or later update
+      const to = (product.attributes as any)?.ownerAddress;
+      const tokenURI = (product.attributes as any)?.tokenURI;
+      if (to && tokenURI) {
+        const nft = await withTenant(req.orgId, (tx) =>
+          tx.nft.create({ data: { organizationId: req.orgId!, productId: product.id, metadata: { to, tokenURI } } }),
+        );
+        await enqueueMint({ organizationId: req.orgId!, nftId: nft.id });
+      }
+    }
     res.status(201).json(product);
   } catch (e) {
     next(e);

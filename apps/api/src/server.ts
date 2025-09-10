@@ -14,7 +14,8 @@ import productsRouter from './routes/products';
 import uploadsRouter from './routes/uploads';
 import billingRouter, { billingWebhookHandler } from './routes/billing';
 import apiKeysRouter from './routes/apikeys';
-import ordersRouter from './routes/orders';
+import ordersRouter, { ordersWebhookHandler } from './routes/orders';
+import nftsRouter from './routes/nfts';
 
 export const logger = pino({ level: process.env.LOG_LEVEL || 'info' });
 export const app = express();
@@ -24,6 +25,7 @@ app.use(helmet());
 app.use(cors({ origin: ['http://localhost:3000'], credentials: true }));
 // Stripe webhook needs raw body; mount it before JSON parser
 app.post('/billing/webhook', express.raw({ type: 'application/json' }), billingWebhookHandler);
+app.post('/orders/webhook', express.raw({ type: 'application/json' }), ordersWebhookHandler);
 app.use(express.json({ limit: '2mb' }));
 app.use(pinoHttp({ logger }));
 app.use(rateLimit({ windowMs: 60_000, max: Env.RATE_LIMIT_MAX() }));
@@ -38,6 +40,7 @@ app.use('/uploads', uploadsRouter);
 app.use('/billing', billingRouter);
 app.use('/apikeys', apiKeysRouter);
 app.use('/orders', ordersRouter);
+app.use('/nfts', nftsRouter);
 
 app.get('/health', (_req, res) => res.json({ ok: true }));
 

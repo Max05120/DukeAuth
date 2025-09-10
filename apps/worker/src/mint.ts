@@ -37,6 +37,19 @@ export async function handleMint(payload: MintPayload) {
     return;
   }
 
+  // Enforce monthly plan limit
+  const sub = await withTenant(payload.organizationId, (tx) => tx.subscription.findFirst({ where: { organizationId: payload.organizationId } }));
+  const plan = (sub?.plan as 'Starter' | 'Pro' | 'Enterprise') || 'Starter';
+  const limit = plan === 'Enterprise' ? Number.MAX_SAFE_INTEGER : plan === 'Pro' ? 500 : 50;
+  const now = new Date();
+  const start = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1));
+  const end = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 1));
+  const minted = await withTenant(payload.organizationId, (tx) => tx.nft.count({ where: { createdAt: { gte: start, lt: end } } }));
+  if (minted >= limit) {
+    console.warn('Quota exceeded, aborting mint');
+    return;
+  }
+
   const account = privateKeyToAccount(pk as `0x${string}`);
   const publicClient = createPublicClient({ transport: http(rpc) });
   const walletClient = createWalletClient({ account, transport: http(rpc) });
@@ -47,5 +60,5 @@ export async function handleMint(payload: MintPayload) {
 
   // Store tx hash in NFT metadata
   const nextMeta = { ...(nft.metadata as any), txHash };
-  await withTenant(payload.organizationId, (tx) => tx.nft.update({ where: { id: nft.id }, data: { metadata: nextMeta } }));
+  await withTenant(payload.organizationId, (tx) => tx.nft.update({ where: { id: nft.id }, data: { metadata: nextMeta, txHash } }));
 }

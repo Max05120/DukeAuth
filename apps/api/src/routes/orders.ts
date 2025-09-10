@@ -61,3 +61,40 @@ router.get('/:id', async (req, res, next) => {
 
 export default router;
 
+// Stripe webhook to mark orders paid and optionally mint
+export async function ordersWebhookHandler(req: any, res: any) {
+  const sig = req.headers['stripe-signature'];
+  if (!sig) return res.status(400).send('Missing signature');
+  const secret = Env.STRIPE_WEBHOOK_SECRET();
+  const stripeLocal = new Stripe(Env.STRIPE_SECRET_KEY(), { apiVersion: '2024-06-20' });
+  let event: Stripe.Event;
+  try {
+    event = stripeLocal.webhooks.constructEvent(req.body, sig as string, secret);
+  } catch (err: any) {
+    return res.status(400).send(`Webhook Error: ${err.message}`);
+  }
+
+  try {
+    if (event.type === 'payment_intent.succeeded') {
+      const pi = event.data.object as Stripe.PaymentIntent;
+      const orderId = pi.metadata?.orderId as string | undefined;
+      const orgId = pi.metadata?.orgId as string | undefined;
+      if (orderId && orgId) {
+        await withTenant(orgId, async (tx) => {
+          await tx.order.update({ where: { id: orderId }, data: { status: 'PAID' } });
+          // Optional: mint after payment if product attached
+          const order = await tx.order.findUnique({ where: { id: orderId } });
+          if (order) {
+            // Business rule: if product relation exists per order item (not modeled yet), you could mint here
+          }
+        });
+      }
+    }
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.error(e);
+    return res.status(500).send('Webhook handling error');
+  }
+
+  res.json({ received: true });
+}

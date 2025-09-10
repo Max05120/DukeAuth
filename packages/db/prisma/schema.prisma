@@ -75,8 +75,17 @@ model Product {
   priceCents     Int
   currency       String        @default("USD")
   inventory      Int           @default(0)
-  images         Json
+  images         Json          // array of image URLs
+  videos         Json?         // array of video URLs
+  collection     String?
+  sku            String?
+  material       String?
+  origin         String?
+  manufacturingDate DateTime?
+  rarity         String?
+  variant        String?
   attributes     Json?
+  mintOn         MintPolicy    @default(MANUAL)
   status         ProductStatus @default(DRAFT)
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
@@ -91,17 +100,34 @@ enum ProductStatus {
   ARCHIVED
 }
 
+enum MintPolicy {
+  MANUAL
+  ON_CREATE
+}
+
 model Nft {
   id             String        @id @default(cuid())
   organizationId String
   productId      String?
   tokenId        String?
   chain          String? 
+  txHash         String?
   metadata       Json?
   createdAt      DateTime      @default(now())
 
   organization   Organization  @relation(fields: [organizationId], references: [id])
   product        Product?      @relation(fields: [productId], references: [id])
+}
+
+model MintUsage {
+  id             String       @id @default(cuid())
+  organizationId String
+  month          String       // e.g., 2025-09
+  count          Int          @default(0)
+  createdAt      DateTime     @default(now())
+
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  @@unique([organizationId, month])
 }
 
 model Order {

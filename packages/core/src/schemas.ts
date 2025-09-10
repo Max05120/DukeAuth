@@ -34,15 +34,38 @@ export const productCreateSchema = z.object({
   currency: z.literal('USD').default('USD'),
   inventory: z.number().int().nonnegative(),
   images: z.array(z.string()).default([]),
+  videos: z.array(z.string()).default([]),
+  collection: z.string().optional(),
+  sku: z.string().optional(),
+  material: z.string().optional(),
+  origin: z.string().optional(),
+  manufacturingDate: z.string().datetime().optional(),
+  rarity: z.string().optional(),
+  variant: z.string().optional(),
   attributes: z.record(z.any()).optional(),
+  mintOn: z.enum(['MANUAL', 'ON_CREATE']).default('MANUAL'),
   status: z.enum(['DRAFT', 'PUBLISHED', 'ARCHIVED']).default('DRAFT'),
 });
 
 export const productUpdateSchema = productCreateSchema.partial();
 
 export const signUploadSchema = z.object({
-  contentType: z.enum(['image/jpeg', 'image/png', 'image/webp', 'image/gif']),
+  contentType: z.enum([
+    'image/jpeg',
+    'image/png',
+    'image/webp',
+    'image/gif',
+    'video/mp4',
+    'video/webm',
+    'model/gltf+json',
+  ]),
   filename: z.string().min(1),
+});
+
+export const nftCreateSchema = z.object({
+  productId: z.string().min(1),
+  to: z.string().regex(/^0x[a-fA-F0-9]{40}$/),
+  tokenURI: z.string().url(),
 });
 
 export const apiKeyCreateSchema = z.object({
@@ -62,3 +85,4 @@ export type ProductUpdateInput = z.infer<typeof productUpdateSchema>;
 export type SignUploadInput = z.infer<typeof signUploadSchema>;
 export type ApiKeyCreateInput = z.infer<typeof apiKeyCreateSchema>;
 export type CheckoutInput = z.infer<typeof checkoutSchema>;
+export type NftCreateInput = z.infer<typeof nftCreateSchema>;
