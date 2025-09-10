@@ -16,6 +16,17 @@ export const loginSchema = z.object({
   totp: z.string().optional(),
 });
 
+export const accountRegisterSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(8),
+});
+
+export const orderCreateSchema = z.object({
+  productId: z.string().min(1),
+  quantity: z.number().int().positive().default(1),
+  buyerEmail: z.string().email().optional(),
+});
+
 export const productCreateSchema = z.object({
   title: z.string().min(1),
   description: z.string().optional(),
@@ -44,6 +55,8 @@ export const checkoutSchema = z.object({
 
 export type RegisterInput = z.infer<typeof registerSchema>;
 export type LoginInput = z.infer<typeof loginSchema>;
+export type AccountRegisterInput = z.infer<typeof accountRegisterSchema>;
+export type OrderCreateInput = z.infer<typeof orderCreateSchema>;
 export type ProductCreateInput = z.infer<typeof productCreateSchema>;
 export type ProductUpdateInput = z.infer<typeof productUpdateSchema>;
 export type SignUploadInput = z.infer<typeof signUploadSchema>;

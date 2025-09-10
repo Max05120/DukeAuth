@@ -54,6 +54,7 @@ enum OrgRole {
   ADMIN
   STAFF
   VIEWER
+  CUSTOMER
 }
 
 model Marketplace {
@@ -111,6 +112,7 @@ model Order {
   status         OrderStatus   @default(PENDING)
   amountCents    Int
   currency       String        @default("USD")
+  stripePaymentIntentId String?
   createdAt      DateTime      @default(now())
 
   organization   Organization  @relation(fields: [organizationId], references: [id])

@@ -9,10 +9,12 @@ import { Env } from '@dukeauth/core';
 import { errorHandler } from './middleware/errors';
 import { tenantResolver } from './middleware/tenant';
 import authRouter from './routes/auth';
+import accountRouter from './routes/account';
 import productsRouter from './routes/products';
 import uploadsRouter from './routes/uploads';
 import billingRouter, { billingWebhookHandler } from './routes/billing';
 import apiKeysRouter from './routes/apikeys';
+import ordersRouter from './routes/orders';
 
 export const logger = pino({ level: process.env.LOG_LEVEL || 'info' });
 export const app = express();
@@ -30,10 +32,12 @@ app.use(rateLimit({ windowMs: 60_000, max: Env.RATE_LIMIT_MAX() }));
 app.use(tenantResolver);
 
 app.use('/auth', authRouter);
+app.use('/account', accountRouter);
 app.use('/products', productsRouter);
 app.use('/uploads', uploadsRouter);
 app.use('/billing', billingRouter);
 app.use('/apikeys', apiKeysRouter);
+app.use('/orders', ordersRouter);
 
 app.get('/health', (_req, res) => res.json({ ok: true }));
 
