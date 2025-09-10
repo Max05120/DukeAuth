@@ -12,7 +12,7 @@ const stripe = new Stripe(Env.STRIPE_SECRET_KEY(), { apiVersion: '2024-06-20' })
 router.post('/', validate(orderCreateSchema), async (req, res, next) => {
   try {
     if (!req.orgId) throw new HttpError(400, 'Tenant not resolved');
-    const { productId, quantity, buyerEmail } = req.body as any;
+    const { productId, quantity, buyerEmail, buyerWalletAddress } = req.body as any;
     const product = await withTenant(req.orgId, (tx) => tx.product.findUnique({ where: { id: productId } }));
     if (!product) throw new HttpError(404, 'Product not found');
     const amountCents = product.priceCents * (quantity || 1);
@@ -24,9 +24,13 @@ router.post('/', validate(orderCreateSchema), async (req, res, next) => {
           organizationId: req.orgId!,
           userId: req.userId,
           buyerEmail: buyerEmail || null,
+          buyerWalletAddress: buyerWalletAddress || null,
           status: 'PENDING',
           amountCents,
           currency: product.currency,
+          items: {
+            create: [{ organizationId: req.orgId!, productId, quantity: quantity || 1, priceCents: product.priceCents, currency: product.currency }],
+          },
         },
       }),
     );

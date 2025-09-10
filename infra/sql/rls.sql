@@ -16,6 +16,8 @@ ALTER TABLE "Marketplace" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE "OrganizationMembership" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE "ApiKey" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE "MintUsage" ENABLE ROW LEVEL SECURITY;
+ALTER TABLE "OrderItem" ENABLE ROW LEVEL SECURITY;
+ALTER TABLE "ClaimToken" ENABLE ROW LEVEL SECURITY;
 
 -- Drop existing policies if re-running
 DO $$ BEGIN
@@ -27,6 +29,8 @@ DO $$ BEGIN
   DROP POLICY IF EXISTS org_membership_isolation ON "OrganizationMembership";
   DROP POLICY IF EXISTS apikey_isolation ON "ApiKey";
   DROP POLICY IF EXISTS mintusage_isolation ON "MintUsage";
+  DROP POLICY IF EXISTS orderitem_isolation ON "OrderItem";
+  DROP POLICY IF EXISTS claimtoken_isolation ON "ClaimToken";
 EXCEPTION WHEN UNDEFINED_OBJECT THEN NULL; END $$;
 
 CREATE POLICY product_isolation ON "Product"
@@ -58,6 +62,14 @@ CREATE POLICY apikey_isolation ON "ApiKey"
   WITH CHECK ("organizationId" = current_setting('dukeauth.tenant_id', true));
 
 CREATE POLICY mintusage_isolation ON "MintUsage"
+  USING ("organizationId" = current_setting('dukeauth.tenant_id', true))
+  WITH CHECK ("organizationId" = current_setting('dukeauth.tenant_id', true));
+
+CREATE POLICY orderitem_isolation ON "OrderItem"
+  USING ("organizationId" = current_setting('dukeauth.tenant_id', true))
+  WITH CHECK ("organizationId" = current_setting('dukeauth.tenant_id', true));
+
+CREATE POLICY claimtoken_isolation ON "ClaimToken"
   USING ("organizationId" = current_setting('dukeauth.tenant_id', true))
   WITH CHECK ("organizationId" = current_setting('dukeauth.tenant_id', true));
 

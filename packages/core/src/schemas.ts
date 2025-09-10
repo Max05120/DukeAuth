@@ -25,6 +25,17 @@ export const orderCreateSchema = z.object({
   productId: z.string().min(1),
   quantity: z.number().int().positive().default(1),
   buyerEmail: z.string().email().optional(),
+  buyerWalletAddress: z.string().regex(/^0x[a-fA-F0-9]{40}$/).optional(),
+});
+
+export const brandingUpdateSchema = z.object({
+  logoUrl: z.string().url().optional(),
+  primaryColor: z.string().optional(),
+  secondaryColor: z.string().optional(),
+  accentColor: z.string().optional(),
+  fontFamily: z.string().optional(),
+  theme: z.enum(['light', 'dark']).optional(),
+  customDomain: z.string().optional(),
 });
 
 export const productCreateSchema = z.object({
@@ -80,6 +91,7 @@ export type RegisterInput = z.infer<typeof registerSchema>;
 export type LoginInput = z.infer<typeof loginSchema>;
 export type AccountRegisterInput = z.infer<typeof accountRegisterSchema>;
 export type OrderCreateInput = z.infer<typeof orderCreateSchema>;
+export type BrandingUpdateInput = z.infer<typeof brandingUpdateSchema>;
 export type ProductCreateInput = z.infer<typeof productCreateSchema>;
 export type ProductUpdateInput = z.infer<typeof productUpdateSchema>;
 export type SignUploadInput = z.infer<typeof signUploadSchema>;

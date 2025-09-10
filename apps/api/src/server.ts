@@ -16,6 +16,8 @@ import billingRouter, { billingWebhookHandler } from './routes/billing';
 import apiKeysRouter from './routes/apikeys';
 import ordersRouter, { ordersWebhookHandler } from './routes/orders';
 import nftsRouter from './routes/nfts';
+import brandingRouter from './routes/branding';
+import claimsRouter from './routes/claims';
 
 export const logger = pino({ level: process.env.LOG_LEVEL || 'info' });
 export const app = express();
@@ -41,6 +43,8 @@ app.use('/billing', billingRouter);
 app.use('/apikeys', apiKeysRouter);
 app.use('/orders', ordersRouter);
 app.use('/nfts', nftsRouter);
+app.use('/branding', brandingRouter);
+app.use('/claims', claimsRouter);
 
 app.get('/health', (_req, res) => res.json({ ok: true }));
 

@@ -63,6 +63,14 @@ model Marketplace {
   subdomain      String        @unique
   name           String?
   createdAt      DateTime      @default(now())
+  // Branding / white-label
+  logoUrl        String?
+  primaryColor   String?
+  secondaryColor String?
+  accentColor    String?
+  fontFamily     String?
+  theme          String?
+  customDomain   String? @unique
 
   organization   Organization  @relation(fields: [organizationId], references: [id])
 }
@@ -130,11 +138,25 @@ model MintUsage {
   @@unique([organizationId, month])
 }
 
+model ClaimToken {
+  id             String       @id @default(cuid())
+  organizationId String
+  nftId          String
+  token          String       @unique
+  expiresAt      DateTime?
+  claimedAt      DateTime?
+  createdAt      DateTime     @default(now())
+
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  nft            Nft          @relation(fields: [nftId], references: [id])
+}
+
 model Order {
   id             String        @id @default(cuid())
   organizationId String
   userId         String?
   buyerEmail     String?
+  buyerWalletAddress String?
   status         OrderStatus   @default(PENDING)
   amountCents    Int
   currency       String        @default("USD")
@@ -143,6 +165,7 @@ model Order {
 
   organization   Organization  @relation(fields: [organizationId], references: [id])
   user           User?         @relation(fields: [userId], references: [id])
+  items          OrderItem[]
 }
 
 enum OrderStatus {
@@ -150,6 +173,19 @@ enum OrderStatus {
   PAID
   FULFILLED
   CANCELLED
+}
+
+model OrderItem {
+  id             String   @id @default(cuid())
+  orderId        String
+  organizationId String
+  productId      String
+  quantity       Int      @default(1)
+  priceCents     Int
+  currency       String   @default("USD")
+
+  order          Order    @relation(fields: [orderId], references: [id])
+  product        Product  @relation(fields: [productId], references: [id])
 }
 
 model Subscription {
